@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema(
     country: String,
     gender: String,
     skills: String,
+    birth: String,
+    block: Boolean,
+    aboutMe: String,
     specialty: String,
     CEOEmail: String,
     socialPlatform: String,
@@ -23,7 +26,8 @@ const userSchema = new mongoose.Schema(
         name: { type: String, required: true },
         email: { type: String, required: true },
         photo: { type: String }, // Optional if not required
-        message: { type: String, required: true }
+        message: { type: String},
+        rating: { type: Number},
       }
     ],
     email: {

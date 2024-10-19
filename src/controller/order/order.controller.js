@@ -18,14 +18,15 @@ const getAllOrder = async (req, res) => {
 
 // get order by gmail
 const getOrderById = async (req, res) => {
+  const gmail = req.params.gmail;
+  console.log(gmail)
   try {
-    const gmail = req.params.gmail
-    const orders = await Order.find({eventOrganizerEmail: gmail})
+    const orders = await Order.find({ eventOrganizerEmail: gmail })
     if (orders) {
       res.status(200).send(orders);
     }
-    else{
-      res.status(404).send({message: "Booking Data Not Found"})
+    else {
+      res.status(404).send({ message: "Booking Data Not Found" })
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -68,37 +69,37 @@ const refundRequest = async (req, res) => {
 // create Payment
 const createPayment = async (req, res) => {
   if (req.method === 'POST') {
-      try {
-          const { price } = req.body;
-          if (!price) {
-              return res.status(400).json({ error: "Price is required" });
-          }
-
-          const paymentIntent = await stripe.paymentIntents.create({
-              amount: parseInt(price * 100), // amount in cents
-              currency: 'usd',
-              payment_method_types: ['card'],
-          });
-
-          res.status(200).json({
-              clientSecret: paymentIntent.client_secret,
-              success: true,
-              message: "Payment intent created successfully",
-          });
-      } catch (error) {
-          console.error("Payment Intent Error:", error.message);
-          res.status(500).json({ error: error.message });
+    try {
+      const { price } = req.body;
+      if (!price) {
+        return res.status(400).json({ error: "Price is required" });
       }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: parseInt(price * 100), // amount in cents
+        currency: 'usd',
+        payment_method_types: ['card'],
+      });
+
+      res.status(200).json({
+        clientSecret: paymentIntent.client_secret,
+        success: true,
+        message: "Payment intent created successfully",
+      });
+    } catch (error) {
+      console.error("Payment Intent Error:", error.message);
+      res.status(500).json({ error: error.message });
+    }
   } else {
-      res.setHeader('Allow', 'POST');
-      res.status(405).end('Method Not Allowed');
+    res.setHeader('Allow', 'POST');
+    res.status(405).end('Method Not Allowed');
   }
 };
 
 const getSingleOrder = async (req, res) => {
   try {
     const { transitionId } = req.params;
-    const query = { transitionId: transitionId }; 
+    const query = { transitionId: transitionId };
     const result = await Order.findOne(query);
 
     if (!result) {
@@ -111,29 +112,29 @@ const getSingleOrder = async (req, res) => {
     res.status(500).send({ message: "Server Error" });
   }
 };
-const metricsForAdminChart = async (req, res) =>{
+const metricsForAdminChart = async (req, res) => {
   try {
     const events = await Event.find({});
     const orders = await Order.find({});
-    const user = await User.find({role: "organizer"});
-    
+    const user = await User.find({ role: "organizer" });
+
     const metrics = {
       totalEvents: events.length,
       totalSales: orders.reduce((acc, order) => acc + order.amount, 0),
       totalTickets: orders.reduce((acc, order) => acc + order?.totalTickets, 0),
       newOrganizers: user.length// Example static data or calculate from your data
     };
-    
+
     res.json(metrics);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 // monthly-metrics
-const monthlyMetrics = async (req, res) =>{
+const monthlyMetrics = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
-    
+
     const eventMetrics = await Event.aggregate([
       {
         $match: {
@@ -191,7 +192,7 @@ const monthlyMetrics = async (req, res) =>{
       const month = i + 1;
       const eventData = eventMetrics.find(e => e.month === month) || { totalEvents: 0, newOrganizers: 0 };
       const orderData = orderMetrics.find(o => o.month === month) || { ticketSales: 0, totalSales: 0 };
-      
+
       return {
         name: new Date(currentYear, i).toLocaleString('default', { month: 'short' }),
         totalEvents: eventData.totalEvents,
@@ -208,31 +209,31 @@ const monthlyMetrics = async (req, res) =>{
 }
 
 
- // payment intent
- const createOrder= async (req, res) => {
+// payment intent
+const createOrder = async (req, res) => {
   const order = req.body;
-  const id=req.params.id
+  const id = req.params.id
   console.log(id)
-    console.log(order,"order api");
-  
-    try {
-      const result = await Order.create(order)
-      // const seatUpdate = await Event.updateOne(
-      //   { _id: new ObjectId(id) },
-      //   { $set: { followers: updateFollowArrayCurrentuser } }
-      // );
-      res.send({
-        success: true,
-        paymentResult: { insertedId: result._id },
-        message: "Order created successfully",
+  console.log(order, "order api");
+
+  try {
+    const result = await Order.create(order)
+    // const seatUpdate = await Event.updateOne(
+    //   { _id: new ObjectId(id) },
+    //   { $set: { followers: updateFollowArrayCurrentuser } }
+    // );
+    res.send({
+      success: true,
+      paymentResult: { insertedId: result._id },
+      message: "Order created successfully",
     });
-    } catch (error) {
-      res.send({
-        success: false,
-        message: error.message,
-      });
-    }
+  } catch (error) {
+    res.send({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
 // module.exports = { getAllOrder, createOrder,createPayment, myAllOrder, refundRequest,getSingleOrder };
-module.exports = { getAllOrder, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment,getSingleOrder };
+module.exports = { getAllOrder, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment, getSingleOrder };

@@ -11,7 +11,7 @@ router.post("/orders", createOrder);
 router.post("/payment", createPayment);
 router.get("/orders", getAllOrder);
 router.get("/orders/:transitionId", getSingleOrder);
-router.get("/orders/:gmail", getOrderById);
+router.get("/ordersByGmail/:gmail", getOrderById);
 router.get("/metricsForAdminChart", metricsForAdminChart);
 router.get("/monthlyMetrics", monthlyMetrics);
 router.get("/myAllOrder/:email", myAllOrder);

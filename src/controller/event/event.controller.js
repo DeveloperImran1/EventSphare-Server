@@ -13,6 +13,7 @@ const getAllEvent = async (req, res) => {
     startDate,
     endDate,
     search,
+    day, // Day filter parameter
     limit = 6,
     page = 1,
   } = req.query;
@@ -49,10 +50,65 @@ const getAllEvent = async (req, res) => {
       filters.dateTime.$lte = new Date(endDate);
     }
   }
+
+  // Day filter
+  if (day) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of the day
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(23, 59, 59, 999); // End of tomorrow
+
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay()); // Start of the current week
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6); // End of the week
+    weekEnd.setHours(23, 59, 59, 999);
+
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    monthStart.setHours(0, 0, 0, 0); // Start of the current month
+
+    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    monthEnd.setHours(23, 59, 59, 999); // End of the current month
+
+    filters.dateTime = {}; // Initialize the dateTime filter
+
+    switch (day.toLowerCase()) {
+      case "today":
+        filters.dateTime.$gte = today;
+        filters.dateTime.$lte = new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1); // End of today
+        break;
+      case "tomorrow":
+        filters.dateTime.$gte = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        filters.dateTime.$lte = tomorrow;
+        break;
+      case "this_week":
+        filters.dateTime.$gte = weekStart;
+        filters.dateTime.$lte = weekEnd;
+        break;
+      case "this_month":
+        filters.dateTime.$gte = monthStart;
+        filters.dateTime.$lte = monthEnd;
+        break;
+      case "all":
+        delete filters.dateTime; // If "all" is selected, remove dateTime filter
+        break;
+      default:
+        delete filters.dateTime;
+    }
+  }
+
+
+
+
+  // Search filter
   if (search) {
     filters.$or = [
-      { title: { $regex: search, $options: 'i' } }, 
-      { description: { $regex: search, $options: 'i' } }, 
+      { title: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
     ];
   }
 
@@ -86,6 +142,7 @@ const getAllEvent = async (req, res) => {
   }
 };
 
+
 const getSingleEvent = async (req, res) => {
   try {
     const query = { _id: new ObjectId(req.params.id) };
@@ -102,24 +159,51 @@ const getSingleEvent = async (req, res) => {
   }
 };
 
-const getBookedSeatUpdate= async (req, res) => {
+const getPopularEvents = async (req, res) => {
   try {
-      const { eventId, newBookedSeats } = req.body;
-
-      // Update the events collection to add the new booked seats
-      const result = await Event.updateOne(
-          { _id: new ObjectId(eventId) },
-          { $addToSet: { bookedSeats: { $each: newBookedSeats } } }
-      );
-
-      if (result.modifiedCount > 0) {
-          res.send({ success: true, message: 'Booked seats updated successfully' });
-      } else {
-          res.send({ success: false, message: 'No changes were made' });
+    const popularEvents = await Event.aggregate([
+      {
+        $addFields: {
+          bookedSeatsCount: { $size: { $ifNull: ["$bookedSeats", []] } }
+        }
+      },
+      {
+        $sort: { bookedSeatsCount: -1 }
+      },
+      {
+        $limit: 6
       }
+    ]);
+    
+
+    res.status(200).json(popularEvents);
   } catch (error) {
-      console.error('Error updating booked seats:', error);
-      res.status(500).send({ success: false, message: 'Server error' });
+    console.error("Error fetching popular events:", error);
+    res.status(500).json({ message: "Something went wrong popular events" });
+  }
+};
+
+
+
+
+const getBookedSeatUpdate = async (req, res) => {
+  try {
+    const { eventId, newBookedSeats } = req.body;
+
+    // Update the events collection to add the new booked seats
+    const result = await Event.updateOne(
+      { _id: new ObjectId(eventId) },
+      { $addToSet: { bookedSeats: { $each: newBookedSeats } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.send({ success: true, message: 'Booked seats updated successfully' });
+    } else {
+      res.send({ success: false, message: 'No changes were made' });
+    }
+  } catch (error) {
+    console.error('Error updating booked seats:', error);
+    res.status(500).send({ success: false, message: 'Server error' });
   }
 };
 
@@ -167,8 +251,8 @@ const getCategoryEvent = async (req, res) => {
 }
 
 // get event by email
-const getEventsByEmail = async () =>{
-  
+const getEventsByEmail = async () => {
+
 }
 
 // create user
@@ -189,4 +273,4 @@ const createEvent = async (req, res) => {
 };
 
 // module.exports = { getAllEvent, createEvent, getSingleEvent };
-module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent ,getBookedSeatUpdate};
+module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents };

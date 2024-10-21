@@ -53,6 +53,7 @@ const eventSchema = new mongoose.Schema(
       phone: { type: String, required: true },
     },
     tags: [{ type: String }],
+    bookedSeats:[{ type: String }],
     when: {
       type: String,
       required: true,

@@ -11,7 +11,7 @@ const getMonthYear = (date) => {
   const monthName = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(d);
   const year = d.getFullYear();
 
-  // Return the formatted result, e.g., "Sep 2024"
+  // Return the formatted result
   return `${monthName} ${year}`;
 };
 

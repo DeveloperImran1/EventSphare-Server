@@ -10,14 +10,24 @@ const userSchema = new mongoose.Schema(
     country: String,
     gender: String,
     skills: String,
+    birth: String,
+    block: Boolean,
+    aboutMe: String,
     specialty: String,
+    CEOEmail: String,
+    socialPlatform: String,
+    location: String,
+    companyName: String,
+    organizer: Boolean,
+    block: Boolean,
     followers: [{ type: String }],
     review: [
       {
         name: { type: String, required: true },
         email: { type: String, required: true },
         photo: { type: String }, // Optional if not required
-        message: { type: String, required: true }
+        message: { type: String},
+        rating: { type: Number},
       }
     ],
     email: {
@@ -35,7 +45,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String, // Specify the type
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "organizer"],
       default: "user",
     }
   },

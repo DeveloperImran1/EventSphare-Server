@@ -1,5 +1,6 @@
 const express = require("express");
-const { createOrder, getAllOrder, getOrderById, myAllOrder, refundRequest, createPayment, metricsForAdminChart, monthlyMetrics ,getSingleOrder } = require("../../controller/order/order.controller");
+
+const { createOrder, getAllOrder, getOrderById, myAllOrder, refundRequest, createPayment, metricsForAdminChart, monthlyMetrics ,getSingleOrder, getOrganizerOrder } = require("../../controller/order/order.controller");
 
 const router = express.Router();
 
@@ -9,6 +10,7 @@ const router = express.Router();
 router.post("/orders", createOrder);
 router.post("/payment", createPayment);
 router.get("/orders", getAllOrder);
+router.get("/organizer-orders/:email", getOrganizerOrder);
 router.get("/orders/:transitionId", getSingleOrder);
 router.get("/ordersByGmail/:gmail", getOrderById);
 router.get("/metricsForAdminChart", metricsForAdminChart);

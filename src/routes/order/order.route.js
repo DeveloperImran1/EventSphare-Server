@@ -1,7 +1,6 @@
 const express = require("express");
-const { getOrganizerOrder, myAllOrder } = require("../../controller/order/order.controller");
 
-const { createOrder, getAllOrder, getOrderById, refundRequest, createPayment, metricsForAdminChart, monthlyMetrics ,getSingleOrder } = require("../../controller/order/order.controller");
+const { createOrder, getAllOrder, getOrderById, refundRequest, createPayment, metricsForAdminChart, monthlyMetrics ,getSingleOrder, getOrganizerOrder, myAllOrder } = require("../../controller/order/order.controller");
 
 const router = express.Router();
 

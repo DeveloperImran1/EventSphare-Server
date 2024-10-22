@@ -36,9 +36,22 @@ const getOrderById = async (req, res) => {
 // get a user all orderd events
 const myAllOrder = async (req, res) => {
   const userEmail = req.params.email;
-  console.log(userEmail)
+
   try {
     const query = { bookedUserEmail: userEmail }
+    const allOrder = await Order.find(query)
+    res.status(200).json(allOrder);
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+// get a user all orderd events
+const getOrganizerOrder= async (req, res) => {
+  const organizerrEmail = req.params.email;
+
+  try {
+    const query = { eventOrganizerEmail: organizerrEmail }
     const allOrder = await Order.find(query)
     res.status(200).json(allOrder);
   }
@@ -233,7 +246,9 @@ const createOrder = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
+
+
 
 // module.exports = { getAllOrder, createOrder,createPayment, myAllOrder, refundRequest,getSingleOrder };
 module.exports = { getAllOrder, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment, getSingleOrder };

@@ -14,22 +14,36 @@ const getAllUser = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   try {
-
     const query = {
       email: req.params.email
     };
 
-    const result = await User.findOne(query);
+    // Step 1: Find the user by email
+    const user = await User.findOne(query);
 
-    res.send(result);
+    if (!user) {
+      return res.status(404).send({ success: false, message: 'User not found' });
+    }
+
+    // Step 2: Query for followers by their emails
+    const followers = await User.find({ email: { $in: user.followers } }); // Fetch followers' details by email
+
+    // Step 3: Attach the populated followers to the user object
+    const userWithFollowers = {
+      ...user.toObject(),
+      followers // Replace followers array with populated user data
+    };
+
+    res.send(userWithFollowers);    
 
   } catch (error) {
     res.send({
       message: error.message,
     })
   }
-}
-// create user
+};
+
+
 const createUser = async (req, res) => {
 
   const user = req.body;

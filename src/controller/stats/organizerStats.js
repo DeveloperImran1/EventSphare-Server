@@ -15,6 +15,7 @@ const getMonthYear = (date) => {
   return `${monthName} ${year}`;
 };
 
+// for Area Chart
 const getAreaChartData = async (req, res) => {
   const { email } = req?.params;
   const query = { "contactInfo.email": email }
@@ -77,6 +78,7 @@ const getAreaChartData = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// for pie Chart
 const getPieChartData = async (req, res) => {
   const { email } = req?.params;
   const query = { "contactInfo.email": email }
@@ -100,6 +102,7 @@ function getWeek(date) {
   const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
+
 const getWaveChartData = async (req, res) => {
   const organizerrEmail = req.params.email;
   const eventDetails = await Event.find({ eventCreatorEmail: organizerrEmail });
@@ -161,9 +164,125 @@ const getWaveChartData = async (req, res) => {
 
   // Send the response with statistics for day, week, and month
   res.send({
-    dayStats: formattedDayStats,
-    weekStats: formattedWeekStats,
-    monthStats: formattedMonthStats,
+    weekStats: formattedWeekStats.length,
+    monthStats: formattedMonthStats.length,
   });
 };
-module.exports = { getAreaChartData, getPieChartData, getWaveChartData };
+
+// for Area Chart
+const getBarChartData = async (req, res) => {
+  const { email } = req?.params;
+  const query = { "contactInfo.email": email }
+  try {
+
+    // Fetch all orders for the organizer's events
+    const orderedEvents = await Order.find({
+      eventOrganizerEmail: email,
+    });
+
+   // Group actual sales by month
+   const salesByMonth = orderedEvents.reduce((acc, order) => {
+    const month = getMonthYear(order.createdAt);
+    if (!month) return acc;
+
+    if (!acc[month]) acc[month] = { Monthly_Sale: 0 };
+    acc[month].Monthly_Sale += order.amount; // Sum the actual sale for that month
+    return acc;
+  }, {});
+
+  // Convert the stats into an array of objects for easy charting
+  const monthlySales = Object.keys(salesByMonth).map((month) => ({
+    month,
+    Monthly_Sale: salesByMonth[month].Monthly_Sale 
+  }));
+
+  // Sort the array by the month
+  monthlySales.sort((a, b) => new Date(a.month).getTime() - new Date(b.month).getTime());
+
+  res.json(monthlySales);
+} catch (err) {
+  res.status(500).json({ message: err.message });
+}
+};
+
+// / Utility function to get the start and end of the current week
+const getStartAndEndOfCurrentWeek = () => {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // Get the current day of the week (0 = Sunday, 6 = Saturday)
+
+  // Calculate the start of the current week (previous Sunday)
+  const startOfCurrentWeek = new Date(now.setDate(now.getDate() - dayOfWeek));
+  startOfCurrentWeek.setHours(0, 0, 0, 0); // Set to midnight on Sunday
+
+  const endOfCurrentWeek = new Date(startOfCurrentWeek);
+  endOfCurrentWeek.setDate(startOfCurrentWeek.getDate() + 6); // End of current week (Saturday)
+  endOfCurrentWeek.setHours(23, 59, 59, 999); // Last millisecond of Saturday
+
+  return { startOfCurrentWeek, endOfCurrentWeek };
+};
+
+// Utility function to get the start and end of the previous week
+const getStartAndEndOfPreviousWeek = () => {
+  const { startOfCurrentWeek } = getStartAndEndOfCurrentWeek();
+
+  const endOfPreviousWeek = new Date(startOfCurrentWeek);
+  endOfPreviousWeek.setDate(startOfCurrentWeek.getDate() - 1); // End of previous week (Saturday)
+  endOfPreviousWeek.setHours(23, 59, 59, 999); // Last millisecond of Saturday
+
+  const startOfPreviousWeek = new Date(endOfPreviousWeek);
+  startOfPreviousWeek.setDate(endOfPreviousWeek.getDate() - 6); // Start of previous week (Sunday)
+  startOfPreviousWeek.setHours(0, 0, 0, 0); // Midnight on Sunday
+
+  return { startOfPreviousWeek, endOfPreviousWeek };
+};
+
+// Controller function to get both current and previous week sales
+const getWeeklySales = async (req, res) => {
+  const organizerEmail = req.params.email;
+
+  try {
+    // Get the current week's start and end dates
+    const { startOfCurrentWeek, endOfCurrentWeek } = getStartAndEndOfCurrentWeek();
+
+    // Get the previous week's start and end dates
+    const { startOfPreviousWeek, endOfPreviousWeek } = getStartAndEndOfPreviousWeek();
+
+    // Find orders for the current week
+    const currentWeekOrders = await Order.find({
+      eventOrganizerEmail: organizerEmail,
+      createdAt: {
+        $gte: startOfCurrentWeek,  // Greater than or equal to the start of the current week
+        $lte: endOfCurrentWeek,    // Less than or equal to the end of the current week
+      },
+    });
+
+    // Find orders for the previous week
+    const previousWeekOrders = await Order.find({
+      eventOrganizerEmail: organizerEmail,
+      createdAt: {
+        $gte: startOfPreviousWeek,  // Greater than or equal to the start of the previous week
+        $lte: endOfPreviousWeek,    // Less than or equal to the end of the previous week
+      },
+    });
+
+    // Calculate total sales for the current week
+    const currentWeekSales = currentWeekOrders.reduce((total, order) => {
+      return total + order.amount;
+    }, 0);
+
+    // Calculate total sales for the previous week
+    const previousWeekSales = previousWeekOrders.reduce((total, order) => {
+      return total + order.amount;
+    }, 0);
+
+    // Send response with both current and previous week sales
+    res.json({
+      currentWeekSales,
+      previousWeekSales,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { getAreaChartData, getPieChartData, getBarChartData,getWeeklySales};

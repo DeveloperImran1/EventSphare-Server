@@ -4,14 +4,11 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 const port =  9000;
 
-
 const eventRoute = require("../src/routes/events/event.route.js");
-
 const userRoute = require("../src/routes/user/user.route.js");
 const orderRoute = require("../src/routes/order/order.route.js");
 const postRoute = require("../src/routes/posts/posts.route.js");
 const stats = require("../src/routes/stats/stats.js");
-
 
 // middleware
 const app = express();
@@ -26,7 +23,6 @@ app.use(
 );
 
 // application route
-
 app.use('/events', eventRoute);
 app.use('/', userRoute);
 app.use('/', orderRoute);

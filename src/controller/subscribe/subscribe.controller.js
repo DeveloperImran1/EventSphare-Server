@@ -50,7 +50,6 @@ const createSubscribeStripe = async (req, res) => {
       });
     } catch (error) {
       if (error.code === 11000) {
-        // ডুপ্লিকেট ত্রুটি হলে এই অংশ কার্যকর হবে
         res.send({
           success: false,
           message: "This coupon already exists.",
@@ -63,5 +62,23 @@ const createSubscribeStripe = async (req, res) => {
       }
     }
   };
+
+  const getSingleSubscribe = async (req, res) => {
+    try {
+      const { transitionId } = req.params;
+    //   console.log(transitionId)
+      const query = { transitionId: transitionId };
+      const result = await Card.findOne(query);
   
-  module.exports = {  createSubscribe,  createSubscribeStripe,  };
+      if (!result) {
+        return res.status(404).send({ message: "Subscribe data not found" });
+      }
+  
+      res.send(result);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({ message: "Server Error" });
+    }
+  };
+  
+  module.exports = {  createSubscribe,  createSubscribeStripe, getSingleSubscribe };

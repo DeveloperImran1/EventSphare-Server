@@ -26,16 +26,20 @@ const cardSchema = new mongoose.Schema({
         required: true,
     },
     bookedUserName: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
     },
     bookedUserPhoto: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
     },
     bookedUserEmail: {
-      type: String,
-      required: true,
+        type: String,
+        required: true,
+    },
+    transitionId: {
+        type: String,
+        required: true,
     },
 });
 

@@ -51,7 +51,8 @@ const eventSchema = new mongoose.Schema(
     contactInfo: {
       email: { type: String, required: true },
       phone: { type: String, required: true },
-    },
+    }, 
+    meetLinks : { type: String },
     tags: [{ type: String }],
     bookedSeats:[{ type: String }],
     when: {

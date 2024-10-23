@@ -218,10 +218,6 @@ const createOrder = async (req, res) => {
 
   try {
     const result = await Order.create(order)
-    // const seatUpdate = await Event.updateOne(
-    //   { _id: new ObjectId(id) },
-    //   { $set: { followers: updateFollowArrayCurrentuser } }
-    // );
     res.send({
       success: true,
       paymentResult: { insertedId: result._id },

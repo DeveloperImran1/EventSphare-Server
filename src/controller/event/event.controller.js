@@ -13,7 +13,7 @@ const getAllEvent = async (req, res) => {
     startDate,
     endDate,
     search,
-    day, // Day filter parameter
+    day, 
     limit = 6,
     page = 1,
   } = req.query;
@@ -54,55 +54,38 @@ const getAllEvent = async (req, res) => {
   // Day filter
   if (day) {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of the day
+    today.setHours(0, 0, 0, 0);
 
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    tomorrow.setHours(23, 59, 59, 999); // End of tomorrow
-
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay()); // Start of the current week
-    weekStart.setHours(0, 0, 0, 0);
-
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6); // End of the week
-    weekEnd.setHours(23, 59, 59, 999);
-
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    monthStart.setHours(0, 0, 0, 0); // Start of the current month
-
-    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    monthEnd.setHours(23, 59, 59, 999); // End of the current month
-
-    filters.dateTime = {}; // Initialize the dateTime filter
-
-    switch (day.toLowerCase()) {
-      case "today":
-        filters.dateTime.$gte = today;
-        filters.dateTime.$lte = new Date(today.getTime() + 24 * 60 * 60 * 1000 - 1); // End of today
+    switch (day) {
+      case 'today':
+        filters.dateTime = {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+        };
         break;
-      case "tomorrow":
-        filters.dateTime.$gte = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-        filters.dateTime.$lte = tomorrow;
+      case 'tomorrow':
+        const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        filters.dateTime = {
+          $gte: tomorrow,
+          $lt: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000)
+        };
         break;
-      case "this_week":
-        filters.dateTime.$gte = weekStart;
-        filters.dateTime.$lte = weekEnd;
+      case 'thisWeek':
+        const endOfWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+        filters.dateTime = {
+          $gte: today,
+          $lt: endOfWeek
+        };
         break;
-      case "this_month":
-        filters.dateTime.$gte = monthStart;
-        filters.dateTime.$lte = monthEnd;
+      case 'thisMonth':
+        const endOfMonth = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+        filters.dateTime = {
+          $gte: today,
+          $lt: endOfMonth
+        };
         break;
-      case "all":
-        delete filters.dateTime; // If "all" is selected, remove dateTime filter
-        break;
-      default:
-        delete filters.dateTime;
     }
   }
-
-
-
 
   // Search filter
   if (search) {
@@ -174,7 +157,7 @@ const getPopularEvents = async (req, res) => {
         $limit: 6
       }
     ]);
-    
+
 
     res.status(200).json(popularEvents);
   } catch (error) {

@@ -10,6 +10,7 @@ const userRoute = require("../src/routes/user/user.route.js");
 const orderRoute = require("../src/routes/order/order.route.js");
 const postRoute = require("../src/routes/posts/posts.route.js");
 const qualityRoute = require("../src/routes/quality/quality.route.js");
+const subscribeRoute = require("../src/routes/subscribe/subscribe.route.js");
 
 
 
@@ -32,6 +33,7 @@ app.use('/', userRoute);
 app.use('/', orderRoute);
 app.use('/', postRoute)
 app.use('/', qualityRoute)
+app.use('/', subscribeRoute)
 
 //database connection with mongoose  
 // mongodb+srv://<db_username>:<db_password>

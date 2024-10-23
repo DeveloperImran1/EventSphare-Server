@@ -1,11 +1,12 @@
 
 const express = require("express");
-const { geAllQuality } = require("../../controller/quality/quality.controller");
+const { getAllQuality,getSingleQuality } = require("../../controller/quality/quality.controller");
 
 
 const router = express.Router();
 
-router.get("/geAllQuality", geAllQuality);
+router.get("/getQuality", getAllQuality);
+router.get("/getQuality/:id", getSingleQuality);
 
 
 

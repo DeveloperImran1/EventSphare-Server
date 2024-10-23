@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const qualitySchema = new mongoose.Schema({
+const cardSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true
@@ -9,7 +9,7 @@ const qualitySchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    BG: {
+    bg: {
         type: String,
         required: true
     },
@@ -24,9 +24,21 @@ const qualitySchema = new mongoose.Schema({
     coupon: {
         type: String,
         required: true,
-    }
+    },
+    bookedUserName: {
+      type: String,
+      required: true,
+    },
+    bookedUserPhoto: {
+      type: String,
+      required: true,
+    },
+    bookedUserEmail: {
+      type: String,
+      required: true,
+    },
 });
 
-const Quality = mongoose.model('Quality', qualitySchema);
+const Card = mongoose.model('Card', cardSchema);
 
-module.exports = Quality;
+module.exports = Card;

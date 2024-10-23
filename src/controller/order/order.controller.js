@@ -255,8 +255,6 @@ const createOrder = async (req, res) => {
   
   try {
     const result = await Order.create(order)
-<<<<<<< HEAD
-=======
     sendEmail(bookedUserEmail, {
       subject: "Your Order is Successfull on EventSphere !",
       message: `<!DOCTYPE html><html><head>
@@ -264,7 +262,6 @@ const createOrder = async (req, res) => {
       </head><body><div class="email-container"><div class="email-header"><h1>Hey Congratulations From EventSphere </h1></div><div class="email-body"><h2>Your Event Booking is Confirmed for the Event of ${eventName}!</h2><p>Hi ${bookedUserName},</p><p>Thank you for booking with <strong>EventSphere</strong>! We are excited to have you at our upcoming event. Below are your booking details:</p><div class="event-details"><p> <img src="${eventImage}" alt="Event Image" class="event-image">
 <strong>Event Name : </strong>${eventName}</p><p><strong>Date : </strong>${eventDate}</p><p><strong>Total Tickets : </strong>${totalTickets}</p><p><strong> Select Seat Names : </strong>${selectSeatNames}</p><p><strong>TransitionId : </strong>${transitionId}</p><p><strong>Amount : </strong>${amount}</p></div><p>Please make sure to arrive at the venue at least 30 minutes before the event start time to ensure a smooth check-in process. If you have any questions, feel free to reach out to our support team.</p><p>We look forward to seeing you at the event!</p><p>Best regards,<br>The EventSphere Team</p></div><div class="email-footer"><p>&copy; 2024 EventSphere. All rights reserved.</p><p><a href="eventsphare@gmail.com">Contact Support</a></p></div></div></body></html>`
   });
->>>>>>> a62b75d09806ce39c4b84fb619c24e752ec0fcb1
     res.send({
       success: true,
       paymentResult: { insertedId: result._id },

@@ -5,15 +5,12 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true
   },
   name: {
     type: String,
-    required: true
   },
   profile_picture: {
     type: String,
-    required: true
   }
 });
 
@@ -21,11 +18,9 @@ const userSchema = new mongoose.Schema({
 const commentSchema = new mongoose.Schema({
   user: {
     type: userSchema,
-    required: true
   },
   text: {
     type: String,
-    required: true
   },
   created_at: {
     type: Date,
@@ -37,12 +32,10 @@ const commentSchema = new mongoose.Schema({
 const postSchema = new mongoose.Schema({
   user: {
     type: userSchema,
-    required: true
   },
   content: {
     title: {
       type: String,
-      required: true
     },
     text: {
       type: String,

@@ -1,3 +1,6 @@
+const cron = require("node-cron");
+const moment = require("moment");
+const { sendEmail } = require("../../lib/SendMail");
 const Event = require("../../models/Event");
 const Order = require("../../models/Order");
 const User = require("../../models/User");
@@ -5,6 +8,7 @@ const User = require("../../models/User");
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const { ObjectId } = require("mongodb");
+const { sendReminderEmail } = require("../../lib/sendReminderEmail");
 
 // All order get korar api
 const getAllOrder = async (req, res) => {
@@ -36,9 +40,22 @@ const getOrderById = async (req, res) => {
 // get a user all orderd events
 const myAllOrder = async (req, res) => {
   const userEmail = req.params.email;
-  console.log(userEmail)
+
   try {
     const query = { bookedUserEmail: userEmail }
+    const allOrder = await Order.find(query)
+    res.status(200).json(allOrder);
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+// get a user all orderd events
+const getOrganizerOrder= async (req, res) => {
+  const organizerrEmail = req.params.email;
+
+  try {
+    const query = { eventOrganizerEmail: organizerrEmail }
     const allOrder = await Order.find(query)
     res.status(200).json(allOrder);
   }
@@ -212,12 +229,42 @@ const monthlyMetrics = async (req, res) => {
 // payment intent
 const createOrder = async (req, res) => {
   const order = req.body;
-  const id = req.params.id
-  console.log(id)
-  console.log(order, "order api");
+  const bookedUserEmail = req.body.bookedUserEmail;
 
+  const {eventId,bookedUserName,eventName, eventImage,amount,totalTickets,selectSeatNames,transitionId,eventDate}=req.body
+ 
+  const id = req.params.id
+
+  const query = { _id: eventId };
+  const events = await Event.findOne(query);
+
+  cron.schedule("0 8 * * *", async () => {
+    console.log("Checking for events tomorrow...");
+
+
+    const tomorrow = moment().add(1, "day").startOf("day");
+
+    for (const event of events) {
+        const eventDate = moment(event.dateTime);
+
+        // Check if the event is tomorrow
+        if (eventDate.isSame(tomorrow, 'day')) {
+            await sendReminderEmail(bookedUserEmail, eventName, event.dateTime);
+        }
+  }})
+  
   try {
     const result = await Order.create(order)
+<<<<<<< HEAD
+=======
+    sendEmail(bookedUserEmail, {
+      subject: "Your Order is Successfull on EventSphere !",
+      message: `<!DOCTYPE html><html><head>
+   <style>body{font-family:Arial,sans-serif;background-color:#f4f4f4;margin:0;padding:0;color:#333}.email-container{width:100%;max-width:600px;margin:0 auto;background-color:#fff;border:1px solid #ddd;padding:20px;border-radius:8px}.email-header{text-align:center;background-color:#007bff;padding:20px;color:#fff;border-radius:8px 8px 0 0}.email-header h1{margin:0;font-size:24px}.email-body{padding:20px}.email-body h2{color:#007bff;margin-top:0}.email-body p{line-height:1.6}.event-details{margin:20px 0;padding:15px;background-color:#f9f9f9;border-radius:6px}.event-details p{margin:5px 0}.event-image{max-width:100%;height:auto;border-radius:6px}.email-footer{text-align:center;padding:20px;background-color:#f4f4f4;color:#999;font-size:12px}.email-footer a{color:#007bff;text-decoration:none}</style>
+      </head><body><div class="email-container"><div class="email-header"><h1>Hey Congratulations From EventSphere </h1></div><div class="email-body"><h2>Your Event Booking is Confirmed for the Event of ${eventName}!</h2><p>Hi ${bookedUserName},</p><p>Thank you for booking with <strong>EventSphere</strong>! We are excited to have you at our upcoming event. Below are your booking details:</p><div class="event-details"><p> <img src="${eventImage}" alt="Event Image" class="event-image">
+<strong>Event Name : </strong>${eventName}</p><p><strong>Date : </strong>${eventDate}</p><p><strong>Total Tickets : </strong>${totalTickets}</p><p><strong> Select Seat Names : </strong>${selectSeatNames}</p><p><strong>TransitionId : </strong>${transitionId}</p><p><strong>Amount : </strong>${amount}</p></div><p>Please make sure to arrive at the venue at least 30 minutes before the event start time to ensure a smooth check-in process. If you have any questions, feel free to reach out to our support team.</p><p>We look forward to seeing you at the event!</p><p>Best regards,<br>The EventSphere Team</p></div><div class="email-footer"><p>&copy; 2024 EventSphere. All rights reserved.</p><p><a href="eventsphare@gmail.com">Contact Support</a></p></div></div></body></html>`
+  });
+>>>>>>> a62b75d09806ce39c4b84fb619c24e752ec0fcb1
     res.send({
       success: true,
       paymentResult: { insertedId: result._id },
@@ -231,5 +278,5 @@ const createOrder = async (req, res) => {
   }
 }
 
-// module.exports = { getAllOrder, createOrder,createPayment, myAllOrder, refundRequest,getSingleOrder };
-module.exports = { getAllOrder, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment, getSingleOrder };
+
+module.exports = { getAllOrder, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment, getSingleOrder , getOrganizerOrder, };

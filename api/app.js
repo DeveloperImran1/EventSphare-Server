@@ -9,9 +9,15 @@ const eventRoute = require("../src/routes/events/event.route.js");
 const userRoute = require("../src/routes/user/user.route.js");
 const orderRoute = require("../src/routes/order/order.route.js");
 const postRoute = require("../src/routes/posts/posts.route.js");
+<<<<<<< HEAD
 const qualityRoute = require("../src/routes/quality/quality.route.js");
 const subscribeRoute = require("../src/routes/subscribe/subscribe.route.js");
 
+=======
+const convertation = require("../src/routes/convertation/convertation.route.js");
+const message = require("../src/routes/message/message.route.js");
+const stats = require("../src/routes/stats/stats.js");
+>>>>>>> a62b75d09806ce39c4b84fb619c24e752ec0fcb1
 
 
 // middleware
@@ -32,8 +38,14 @@ app.use('/events', eventRoute);
 app.use('/', userRoute);
 app.use('/', orderRoute);
 app.use('/', postRoute)
+<<<<<<< HEAD
 app.use('/', qualityRoute)
 app.use('/', subscribeRoute)
+=======
+app.use('/', convertation)
+app.use('/', message)
+app.use('/', stats)
+>>>>>>> a62b75d09806ce39c4b84fb619c24e752ec0fcb1
 
 //database connection with mongoose  
 // mongodb+srv://<db_username>:<db_password>

@@ -10,6 +10,9 @@ const eventRoute = require("../src/routes/events/event.route.js");
 const userRoute = require("../src/routes/user/user.route.js");
 const orderRoute = require("../src/routes/order/order.route.js");
 const postRoute = require("../src/routes/posts/posts.route.js");
+const convertation = require("../src/routes/convertation/convertation.route.js");
+const message = require("../src/routes/message/message.route.js");
+const stats = require("../src/routes/stats/stats.js");
 
 
 // middleware
@@ -30,6 +33,9 @@ app.use('/events', eventRoute);
 app.use('/', userRoute);
 app.use('/', orderRoute);
 app.use('/', postRoute)
+app.use('/', convertation)
+app.use('/', message)
+app.use('/', stats)
 
 //database connection with mongoose  
 // mongodb+srv://<db_username>:<db_password>

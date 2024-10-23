@@ -46,7 +46,7 @@ const postSchema = new mongoose.Schema({
     },
     text: {
       type: String,
-      required: true
+      required: false
     },
     media: {
       type: [String] // Array of URLs for media

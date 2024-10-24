@@ -13,6 +13,7 @@ const getAllEvent = async (req, res) => {
     startDate,
     endDate,
     search,
+    day, 
     limit = 6,
     page = 1,
   } = req.query;
@@ -49,10 +50,48 @@ const getAllEvent = async (req, res) => {
       filters.dateTime.$lte = new Date(endDate);
     }
   }
+
+  // Day filter
+  if (day) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    switch (day) {
+      case 'today':
+        filters.dateTime = {
+          $gte: today,
+          $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+        };
+        break;
+      case 'tomorrow':
+        const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        filters.dateTime = {
+          $gte: tomorrow,
+          $lt: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000)
+        };
+        break;
+      case 'thisWeek':
+        const endOfWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+        filters.dateTime = {
+          $gte: today,
+          $lt: endOfWeek
+        };
+        break;
+      case 'thisMonth':
+        const endOfMonth = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+        filters.dateTime = {
+          $gte: today,
+          $lt: endOfMonth
+        };
+        break;
+    }
+  }
+
+  // Search filter
   if (search) {
     filters.$or = [
-      { title: { $regex: search, $options: 'i' } }, 
-      { description: { $regex: search, $options: 'i' } }, 
+      { title: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
     ];
   }
 
@@ -86,6 +125,7 @@ const getAllEvent = async (req, res) => {
   }
 };
 
+
 const getSingleEvent = async (req, res) => {
   try {
     const query = { _id: new ObjectId(req.params.id) };
@@ -102,24 +142,51 @@ const getSingleEvent = async (req, res) => {
   }
 };
 
-const getBookedSeatUpdate= async (req, res) => {
+const getPopularEvents = async (req, res) => {
   try {
-      const { eventId, newBookedSeats } = req.body;
-
-      // Update the events collection to add the new booked seats
-      const result = await Event.updateOne(
-          { _id: new ObjectId(eventId) },
-          { $addToSet: { bookedSeats: { $each: newBookedSeats } } }
-      );
-
-      if (result.modifiedCount > 0) {
-          res.send({ success: true, message: 'Booked seats updated successfully' });
-      } else {
-          res.send({ success: false, message: 'No changes were made' });
+    const popularEvents = await Event.aggregate([
+      {
+        $addFields: {
+          bookedSeatsCount: { $size: { $ifNull: ["$bookedSeats", []] } }
+        }
+      },
+      {
+        $sort: { bookedSeatsCount: -1 }
+      },
+      {
+        $limit: 6
       }
+    ]);
+
+
+    res.status(200).json(popularEvents);
   } catch (error) {
-      console.error('Error updating booked seats:', error);
-      res.status(500).send({ success: false, message: 'Server error' });
+    console.error("Error fetching popular events:", error);
+    res.status(500).json({ message: "Something went wrong popular events" });
+  }
+};
+
+
+
+
+const getBookedSeatUpdate = async (req, res) => {
+  try {
+    const { eventId, newBookedSeats } = req.body;
+
+    // Update the events collection to add the new booked seats
+    const result = await Event.updateOne(
+      { _id: new ObjectId(eventId) },
+      { $addToSet: { bookedSeats: { $each: newBookedSeats } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.send({ success: true, message: 'Booked seats updated successfully' });
+    } else {
+      res.send({ success: false, message: 'No changes were made' });
+    }
+  } catch (error) {
+    console.error('Error updating booked seats:', error);
+    res.status(500).send({ success: false, message: 'Server error' });
   }
 };
 
@@ -167,8 +234,8 @@ const getCategoryEvent = async (req, res) => {
 }
 
 // get event by email
-const getEventsByEmail = async () =>{
-  
+const getEventsByEmail = async () => {
+
 }
 
 // create user
@@ -189,4 +256,4 @@ const createEvent = async (req, res) => {
 };
 
 // module.exports = { getAllEvent, createEvent, getSingleEvent };
-module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent ,getBookedSeatUpdate};
+module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents };

@@ -19,7 +19,6 @@ const newConversation = async (req, res) => {
 // get conversation with Id
 const getConvertation = async (req, res) => {
     const userId = req.params.id;
-    console.log(userId)
     try {
         const conversation = await Conversation.find({
             members: {$in: [userId]},

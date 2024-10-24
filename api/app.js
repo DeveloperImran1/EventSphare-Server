@@ -5,6 +5,7 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 require("dotenv").config();
 const mongoose = require("mongoose");
+
 const port = 9000;
 const app = express();
 const server = http.createServer(app); // Use server instead of app for listening
@@ -32,6 +33,7 @@ app.use(
   })
 );
 
+
 // Socket.IO Middleware with consistent CORS policy
 const io = socketIo(server, {
   cors: {
@@ -45,6 +47,7 @@ const io = socketIo(server, {
 });
 
 // Application routes
+
 app.use('/events', eventRoute);
 app.use('/', userRoute);
 app.use('/', orderRoute);

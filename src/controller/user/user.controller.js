@@ -1,3 +1,5 @@
+const { default: mongoose } = require("mongoose");
+const { ObjectId, BSON } = require("mongodb");
 const User = require("../../models/User");
 
 // Get All User Filtering By User roll: user && roll: organizer
@@ -35,6 +37,27 @@ const getSingleUser = async (req, res) => {
     };
 
     res.send(userWithFollowers);    
+
+  } catch (error) {
+    res.send({
+      message: error.message,
+    })
+  }
+};
+const getSingleUserById = async (req, res) => {
+  try {
+
+    const userId =(req.params.id)
+    const query={_id:userId}
+    const user = await User.findById(query);
+
+    if (!userId) {
+      console.error("User ID is missing or invalid");
+    }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+    res.send(user);    
 
   } catch (error) {
     res.send({
@@ -279,6 +302,61 @@ const organizerRequestCancel = async (req, res) =>{
   }
 }
 
+// handleAddFollower
+const handleAddFollower = async (req, res) => {
+  const id = req.params.id
+  const { followerEmail } = req.body;  
+  if (!followerEmail) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+    const userId = id; 
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (!user.followers.includes(followerEmail)) {
+      user.followers.push(followerEmail); // Add email to the followers array
+      await user.save(); // Save changes to the database
+    }
+
+    return res.status(200).json({ message: 'Follower added successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// handleRemoveFollower
+const handleRemoveFollower = async (req, res) => {
+  const id = req.params.id;
+  const { followerEmail } = req.body;
+
+  if (!followerEmail) {
+      return res.status(400).json({ message: 'Email is required' });
+  }
+
+  try {
+      const userId = id;
+      const user = await User.findById(userId);
+
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Remove the follower if it exists in the followers array
+      if (user.followers.includes(followerEmail)) {
+          user.followers = user.followers.filter(email => email !== followerEmail);
+          await user.save(); // Save changes to the database
+      }
+
+      return res.status(200).json({ message: 'Follower removed successfully' });
+  } catch (error) {
+      return res.status(500).json({ message: 'Server error', error });
+  }
+};
 module.exports = { 
   getAllUser,
   getSingleUser, 
@@ -291,5 +369,8 @@ module.exports = {
   userRollUpdate,
   organizerRequestCancel,
   addedFollower,
-  updateUserReviw
+  updateUserReviw,
+  handleAddFollower,
+  handleRemoveFollower,
+  getSingleUserById
 }; 

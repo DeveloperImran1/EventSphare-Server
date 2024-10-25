@@ -1,3 +1,5 @@
+const { default: mongoose } = require("mongoose");
+const { ObjectId, BSON } = require("mongodb");
 const User = require("../../models/User");
 
 // Get All User Filtering By User roll: user && roll: organizer
@@ -35,6 +37,27 @@ const getSingleUser = async (req, res) => {
     };
 
     res.send(userWithFollowers);    
+
+  } catch (error) {
+    res.send({
+      message: error.message,
+    })
+  }
+};
+const getSingleUserById = async (req, res) => {
+  try {
+
+    const userId =(req.params.id)
+    const query={_id:userId}
+    const user = await User.findById(query);
+
+    if (!userId) {
+      console.error("User ID is missing or invalid");
+    }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+    res.send(user);    
 
   } catch (error) {
     res.send({
@@ -349,4 +372,5 @@ module.exports = {
   updateUserReviw,
   handleAddFollower,
   handleRemoveFollower,
+  getSingleUserById
 }; 

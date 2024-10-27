@@ -31,8 +31,8 @@ const eventSchema = new mongoose.Schema(
     },
     organizer: {
       name: { type: String, required: true },
-      followers: { type: String, required: true }, // you can use a number if you want exact values
-      bio: { type: String, required: true },
+      followers: { type: String, required: false }, // you can use a number if you want exact values
+      bio: { type: String, required: false },
       photo: { type: String, required: true },
     },
     description: { type: String, required: true },

@@ -1,11 +1,11 @@
-require("dotenv").config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+require("dotenv").config();
 const mongoose = require("mongoose");
 
-const port = process.env.PORT || 9000;
+const port = 9000;
 const app = express();
 const server = http.createServer(app); 
 
@@ -163,9 +163,6 @@ process.on('unhandledRejection', (error) => {
 });
 
 // Listening on server instead of app
-// server.listen(port, () => {
-//   console.log(`Event Sphere app listening on port ${port}`);
-// });
-server.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${port}`);
+server.listen(port, () => {
+  console.log(`Event Sphere app listening on port ${port}`);
 });

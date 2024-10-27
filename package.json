@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./api/app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -22,7 +22,6 @@
     "mongoose": "^8.5.0",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
-    "nodemon": "^3.1.4",
     "socket.io": "^4.8.0",
     "stripe": "^17.1.0"
   }

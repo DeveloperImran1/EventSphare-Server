@@ -1,4 +1,3 @@
-
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -8,7 +7,7 @@ const mongoose = require("mongoose");
 
 const port = 9000;
 const app = express();
-const server = http.createServer(app); // Use server instead of app for listening
+const server = http.createServer(app); 
 
 // Route imports
 const eventRoute = require("../src/routes/events/event.route.js");
@@ -22,7 +21,7 @@ const message = require("../src/routes/message/message.route.js");
 const stats = require("../src/routes/stats/stats.js");
 
 // Middleware
-app.use(express.json()); // Remove the duplicate express.json() below
+app.use(express.json()); 
 
 app.use(
   cors({
@@ -32,7 +31,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 // Socket.IO Middleware with consistent CORS policy
 const io = socketIo(server, {
@@ -47,20 +45,18 @@ const io = socketIo(server, {
 });
 
 // Application routes
-
 app.use('/events', eventRoute);
 app.use('/', userRoute);
 app.use('/', orderRoute);
 app.use('/', postRoute);
-app.use('/', postRoute)
-app.use('/', qualityRoute)
-app.use('/', subscribeRoute)
-app.use('/', convertation)
-app.use('/', message)
-app.use('/', stats)
+app.use('/', qualityRoute);
+app.use('/', subscribeRoute);
+app.use('/', convertation);
+app.use('/', message);
+app.use('/', stats);
 
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qnwtz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+// MongoDB Connection
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qnwtz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 mongoose
   .connect(uri, { dbName: process.env.DB_NAME })
   .then(() => console.log(`Connected to MongoDB`))

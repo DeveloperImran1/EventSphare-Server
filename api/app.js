@@ -163,6 +163,9 @@ process.on('unhandledRejection', (error) => {
 });
 
 // Listening on server instead of app
-server.listen(port, () => {
-  console.log(`Event Sphere app listening on port ${port}`);
+// server.listen(port, () => {
+//   console.log(`Event Sphere app listening on port ${port}`);
+// });
+server.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${port}`);
 });

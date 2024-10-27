@@ -1,11 +1,12 @@
 const express = require("express");
-const { createEvent, getAllEvent, getSingleEvent, getMyEvent, getCategoryEvent,getBookedSeatUpdate ,getPopularEvents} = require("../../controller/event/event.controller");
+const { createEvent, getAllEvent, getSingleEvent, getMyEvent, getCategoryEvent,getBookedSeatUpdate ,getPopularEvents, postEvent} = require("../../controller/event/event.controller");
 
 
 
 const router = express.Router();
 
 router.post("/", createEvent);
+router.post("/postEvent", postEvent);
 router.get("/", getAllEvent);
 router.get("/popular-events", getPopularEvents);
 router.get("/:id", getSingleEvent);

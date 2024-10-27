@@ -254,6 +254,22 @@ const createEvent = async (req, res) => {
     });
   }
 };
+const postEvent = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method Not Allowed' });
+  }
+
+  try {
+    const eventData = req.body;
+    // Insert the event data into the collection
+    const result = await Event.create(eventData);
+
+    res.status(201).json({ message: 'Event added successfully!', data: result });
+  } catch (error) {
+    console.error('Error adding event:', error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
 
 // module.exports = { getAllEvent, createEvent, getSingleEvent };
-module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents };
+module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents, postEvent };

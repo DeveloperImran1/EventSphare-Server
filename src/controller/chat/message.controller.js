@@ -117,7 +117,7 @@ const getCorrentChatters = async (req, res) => {
     try {
         const currentUserID = req.query.id;
 
-        // Check if currentUserID is valid ObjectId
+        // Check if currentUserID is valid ObjectId-->
         if (!mongoose.Types.ObjectId.isValid(currentUserID)) {
             return res.status(400).json({ success: false, message: "Invalid user ID" });
         }

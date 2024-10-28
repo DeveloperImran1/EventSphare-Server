@@ -1,3 +1,4 @@
+require("dotenv").config();
 const cron = require("node-cron");
 const moment = require("moment");
 const { sendEmail } = require("../../lib/SendMail");

@@ -63,7 +63,7 @@ const getMessages = async (req, res) => {
       const reciverId = req.query.reciverId;
       const senderId = req.query.senderId;
 
-      // Check if senderId and receiverId are valid ObjectIds
+      // Check if senderId and receiverId are valid ObjectIds-->
       if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(reciverId)) {
           return res.status(400).json({ success: false, message: "Invalid participant IDs" });
       }

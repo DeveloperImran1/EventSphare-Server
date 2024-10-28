@@ -4,12 +4,10 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 require("dotenv").config();
 const mongoose = require("mongoose");
-
-
+const { app } = require('../src/soket/soket.js');
 const port = 9000;
-const app = express();
-const server = http.createServer(app);
 
+const server = http.createServer(app); 
 
 // Route imports
 const eventRoute = require("../src/routes/events/event.route.js");
@@ -21,6 +19,8 @@ const subscribeRoute = require("../src/routes/subscribe/subscribe.route.js");
 const convertation = require("../src/routes/convertation/convertation.route.js");
 const message = require("../src/routes/message/message.route.js");
 const stats = require("../src/routes/stats/stats.js");
+const  chatRoute = require("../src/routes/chat/chat.route.js");
+
 
 
 // Middleware
@@ -58,6 +58,7 @@ app.use('/', subscribeRoute);
 app.use('/', convertation);
 app.use('/', message);
 app.use('/', stats);
+app.use('/', chatRoute);
 
 
 // MongoDB Connection

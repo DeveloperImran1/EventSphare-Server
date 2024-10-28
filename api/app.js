@@ -48,8 +48,6 @@ const io = socketIo(server, {
   },
   pingTimeout: 60000
 });
-
-
 // Application routes
 app.use('/events', eventRoute);
 app.use('/', userRoute);

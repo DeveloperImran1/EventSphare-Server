@@ -249,6 +249,36 @@ const userRollUpdate = async (req, res) =>{
     res.status(500).json({ message: error.message });
   }
 }
+
+//* User Roll Update with Email
+const userRollUpdateWithEmail = async (req, res) =>{
+  const {email, newRole} = req.body;
+  console.log(email, newRole)
+  try{
+    const updatedUserRoll = await User.updateOne({email: email}, {
+      $set:{
+        role: newRole,
+      }
+    });
+    if (updatedUserRoll) {
+      res.status(200).send({
+        success: true , 
+        message: "User Role Updated Successfully ", 
+        data: updatedUserRoll})
+    }
+    else{
+      res.status(404).send({
+        success: false,
+        message: "User Role Not Updated"
+      })
+    }
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+
 //* Put Request User block: true
 const blockUser = async (req, res) =>{
   try{
@@ -372,5 +402,6 @@ module.exports = {
   updateUserReviw,
   handleAddFollower,
   handleRemoveFollower,
-  getSingleUserById
+  getSingleUserById,
+  userRollUpdateWithEmail
 }; 

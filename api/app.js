@@ -6,10 +6,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const { app } = require('../src/soket/soket.js');
 const port = 9000;
-
 const server = http.createServer(app); 
-
-// Route imports
+// Route imports//
 const eventRoute = require("../src/routes/events/event.route.js");
 const userRoute = require("../src/routes/user/user.route.js");
 const orderRoute = require("../src/routes/order/order.route.js");
@@ -23,10 +21,12 @@ const  chatRoute = require("../src/routes/chat/chat.route.js");
 
 
 
-// Middleware
+
+// Import Notification model
+const Notification = require("../src/models/notification.model.js");
+
+// Middleware//
 app.use(express.json());
-
-
 app.use(
   cors({
     origin: [
@@ -35,7 +35,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 // Socket.IO Middleware with consistent CORS policy
 const io = socketIo(server, {
@@ -59,8 +58,6 @@ app.use('/', convertation);
 app.use('/', message);
 app.use('/', stats);
 app.use('/', chatRoute);
-
-
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qnwtz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 mongoose
@@ -68,13 +65,44 @@ mongoose
   .then(() => console.log(`Connected to MongoDB`))
   .catch((err) => console.error(err));
 
+// ---------- Notification Routes ----------
+
+// Route to send a notification
+app.post('/send-notification', async (req, res) => {
+  const { userId, message } = req.body;
+  if (!userId || !message) {
+    return res.status(400).send({ success: false, message: "User ID and message are required." });
+  }
+
+  try {
+    // Save the notification to the database
+    const notification = new Notification({ userId, message });
+    await notification.save();
+    res.status(200).send({ success: true, message: "Notification sent." });
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Failed to send notification." });
+  }
+});
+
+// Route to get unseen notifications for a specific user
+app.get('/get-notifications/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Retrieve unseen notifications from the database
+    const userNotifications = await Notification.find({ userId, seen: false });
+    res.send(userNotifications);
+  } catch (error) {
+    res.status(500).send({ success: false, message: "Failed to retrieve notifications." });
+  }
+});
+
+// ---------- End of Notification Routes ----------
 
 // Send message to browser
 app.get("/", (req, res) => {
   res.send("Welcome to Event Sphere app!");
 });
-
-
 // 404 route
 app.all('*', (req, res) => {
   res.status(404).send({
@@ -82,21 +110,16 @@ app.all('*', (req, res) => {
   });
 });
 
-
 let users = {};
-
-
 // Health check route
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', users: Object.keys(users).length });
 });
 
-
 // WebSocket events
 io.on('connection', (socket) => {
   console.log("User connected:", socket.id);
-
-
+  
   socket.on('join', (userName) => {
     if (!userName || typeof userName !== 'string') {
       socket.emit('error', 'Invalid username');

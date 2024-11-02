@@ -112,6 +112,37 @@ const updateUserReviw = async (req, res) => {
   }
 };
 
+const updateNotification = async (req, res) => {
+  try {
+    console.log(req?.params?.email);
+    console.log(req?.body);
+
+    // Create new notification object from req.body
+    const newNotification = {
+      type: req.body.type,
+      message: req.body.message,
+      route: req.body.route || null, // Optional route, can be null
+      isRead: false, // Default value
+      createdAt: new Date() // Current date
+    };
+
+    const result = await User.updateOne(
+      { email: req?.params?.email },
+      {
+        $push: {
+          notifications: newNotification
+        }
+      },
+      { upsert: false, runValidators: true }
+    );
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // followes add korar api
 
 const addedFollower = async (req, res) => {
@@ -291,5 +322,6 @@ module.exports = {
   userRollUpdate,
   organizerRequestCancel,
   addedFollower,
-  updateUserReviw
+  updateUserReviw,
+  updateNotification
 }; 

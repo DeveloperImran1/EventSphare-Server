@@ -13,7 +13,7 @@ const getAllEvent = async (req, res) => {
     startDate,
     endDate,
     search,
-    day, 
+    day,
     limit = 6,
     page = 1,
   } = req.query;
@@ -255,5 +255,29 @@ const createEvent = async (req, res) => {
   }
 };
 
+
+const getReviewUpdate = async (req, res) => {
+  try {
+    const { eventId, newReview } = req.body;
+
+    // Add the new review to the existing array of reviews
+    const result = await Event.updateOne(
+      { _id: new ObjectId(eventId) },
+      { $push: { reviews: newReview } } // Assuming 'reviews' is the field that holds the array of reviews
+    );
+
+    if (result.modifiedCount > 0) {
+      res.send({ success: true, message: 'Review added successfully' });
+    } else {
+      res.send({ success: false, message: 'No changes were made' });
+    }
+  } catch (error) {
+    console.error('Error adding review:', error);
+    res.status(500).send({ success: false, message: 'Server error' });
+  }
+};
+
+
+
 // module.exports = { getAllEvent, createEvent, getSingleEvent };
-module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents };
+module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents, getReviewUpdate };

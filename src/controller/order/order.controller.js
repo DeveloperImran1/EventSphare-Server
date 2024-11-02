@@ -1,3 +1,4 @@
+require("dotenv").config();
 const cron = require("node-cron");
 const moment = require("moment");
 const { sendEmail } = require("../../lib/SendMail");
@@ -224,8 +225,6 @@ const monthlyMetrics = async (req, res) => {
     res.status(500).json({ message: "Error fetching monthly metrics", error: error.message });
   }
 }
-
-
 // payment intent
 const createOrder = async (req, res) => {
   const order = req.body;

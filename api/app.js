@@ -23,7 +23,7 @@ const  chatRoute = require("../src/routes/chat/chat.route.js");
 
 
 // Import Notification model
-const Notification = require("../src/models/notification.model.js");
+const Notification = require("../src/models/notification");
 
 // Middleware//
 app.use(express.json());
@@ -65,21 +65,21 @@ mongoose
   .then(() => console.log(`Connected to MongoDB`))
   .catch((err) => console.error(err));
 
-// ---------- Notification Routes ----------
+// ---- Notification Routes ----
 
-// Route to send a notification
 app.post('/send-notification', async (req, res) => {
   const { userId, message } = req.body;
+
   if (!userId || !message) {
     return res.status(400).send({ success: false, message: "User ID and message are required." });
   }
 
   try {
     // Save the notification to the database
-    const notification = new Notification({ userId, message });
-    await notification.save();
-    res.status(200).send({ success: true, message: "Notification sent." });
+    await Notification.create({ userId, message });
+    res.status(200).send({ success: true, message: "Notification sent successfully." });
   } catch (error) {
+    console.error("Error sending notification:", error);
     res.status(500).send({ success: false, message: "Failed to send notification." });
   }
 });
@@ -91,8 +91,9 @@ app.get('/get-notifications/:userId', async (req, res) => {
   try {
     // Retrieve unseen notifications from the database
     const userNotifications = await Notification.find({ userId, seen: false });
-    res.send(userNotifications);
+    res.status(200).send({ success: true, data: userNotifications, message: "Unseen notifications retrieved successfully." });
   } catch (error) {
+    console.error("Error retrieving notifications:", error);
     res.status(500).send({ success: false, message: "Failed to retrieve notifications." });
   }
 });

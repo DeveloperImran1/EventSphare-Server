@@ -103,6 +103,25 @@ io.on('connection', (socket) => {
     io.emit('allUsers', users);
   });
 
+
+
+
+// for chating i add it: 
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  socket.on('disconnect', () => {
+      console.log('Client disconnected');
+  });
+
+  socket.on('getOnlineUsers', (userId) => {
+      // Handle online users here
+  });
+});
+
+
+
+
+
   socket.on("callUser", ({ userToCall, signalData, from }) => {
     if (!users[userToCall] || !users[from]) {
       socket.emit('error', 'User not found');
@@ -169,3 +188,6 @@ process.on('unhandledRejection', (error) => {
 server.listen(port, () => {
   console.log(`Event Sphere app listening on port ${port}`);
 });
+
+
+

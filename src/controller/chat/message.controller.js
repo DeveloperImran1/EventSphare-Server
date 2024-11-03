@@ -2,7 +2,10 @@ const mongoose = require("mongoose");
 const Conversation = require("../../models/Conversation");
 const Message = require("../../models/Message");
 const User = require("../../models/User");
-const { getReciverSocketId, io } = require("../../soket/soket");
+const { io, getReciverSocketId } = require("../../soket/soket");
+
+
+
 
 const sendMessage = async (req, res) => {
     try {
@@ -42,9 +45,11 @@ const sendMessage = async (req, res) => {
         // Save the conversation and message
         await Promise.all([chats.save(), newMessages.save()]);
 
-        const reciverSocketId = getReciverSocketId(reciverId);
-        if (reciverSocketId) {
-            io.to(reciverSocketId).emit("newMessage", newMessages);
+
+        const reciverSocketId = getReciverSocketId
+        (reciverId);
+        if(reciverSocketId){
+           io.to(reciverSocketId).emit("newMessage",newMessages)
         }
 
         // Send the new message back as a response

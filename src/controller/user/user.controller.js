@@ -137,8 +137,6 @@ const updateUserReviw = async (req, res) => {
 
 const updateNotification = async (req, res) => {
   try {
-    console.log(req?.params?.email);
-    console.log(req?.body);
 
     // Create new notification object from req.body
     const newNotification = {

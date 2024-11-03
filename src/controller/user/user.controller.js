@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { ObjectId, BSON } = require("mongodb");
 const User = require("../../models/User");
+const { newConversation } = require("../conversation/conversation.controller");
 
 // Get All User Filtering By User roll: user && roll: organizer
 const getAllUser = async (req, res) => {
@@ -146,7 +147,7 @@ const updateNotification = async (req, res) => {
       isRead: false, // Default value
       createdAt: new Date() // Current date
     };
-
+      console.log(newNotification)
     const result = await User.updateOne(
       { email: req?.params?.email },
       {

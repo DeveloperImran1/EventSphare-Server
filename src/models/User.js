@@ -43,6 +43,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    notifications: [
+      {
+        type: { type: String, enum: ["payment", "follow", "event", "community_post"], required: true },
+        message: { type: String, required: true },
+        route: { type: String, default: null },
+        isRead: { type: Boolean, default: false },
+        createdAt: { type: Date, default: Date.now }
+      }
+    ],
+    
     role: {
       type: String, // Specify the type
       enum: ["user", "admin", "organizer"],

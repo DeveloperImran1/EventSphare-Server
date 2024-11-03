@@ -84,19 +84,25 @@ app.post('/send-notification', async (req, res) => {
   }
 });
 
-// Route to get unseen notifications for a specific user
-app.get('/get-notifications/:userId', async (req, res) => {
-  const userId = req.params.userId;
+// Route to get notifications for a specific user
+app.get('/notifications/:userId', async (req, res) => {
+  const { userId } = req.params;
 
   try {
-    // Retrieve unseen notifications from the database
-    const userNotifications = await Notification.find({ userId, seen: false });
-    res.status(200).send({ success: true, data: userNotifications, message: "Unseen notifications retrieved successfully." });
+    // Find notifications that match the user's _id
+    const userNotifications = await Notification.find({ userId });
+
+    if (!userNotifications || userNotifications.length === 0) {
+      return res.status(404).send({ success: false, message: "No notifications found for this user" });
+    }
+
+    res.status(200).send({ success: true, data: userNotifications });
   } catch (error) {
     console.error("Error retrieving notifications:", error);
-    res.status(500).send({ success: false, message: "Failed to retrieve notifications." });
+    res.status(500).send({ success: false, message: "Failed to retrieve notifications" });
   }
 });
+
 
 // ---------- End of Notification Routes ----------
 

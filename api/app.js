@@ -145,8 +145,6 @@ io.on('connection', (socket) => {
   });
 
 
-<<<<<<< HEAD
-=======
 
 
 // for chating i add it: 
@@ -165,7 +163,6 @@ io.on('connection', (socket) => {
 
 
 
->>>>>>> dd0278b905929118959d66424783f1dcc1d8b889
   socket.on("callUser", ({ userToCall, signalData, from }) => {
     if (!users[userToCall] || !users[from]) {
       socket.emit('error', 'User not found');
@@ -247,7 +244,4 @@ server.listen(port, () => {
 });
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> dd0278b905929118959d66424783f1dcc1d8b889

@@ -11,6 +11,7 @@ router.get("/", getAllEvent);
 router.get("/popular-events", getPopularEvents);
 router.get("/:id", getSingleEvent);
 router.patch("/:id", getBookedSeatUpdate);
+// router.post("/:id", getReviewUpdate);
 router.get("/getMyEvent/:email", getMyEvent);
 router.get("/getCategoryEvent/:category", getCategoryEvent);
 

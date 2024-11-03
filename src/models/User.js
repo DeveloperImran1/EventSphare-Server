@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
     companyName: String,
     organizer: Boolean,
     block: Boolean,
+    
     followers: [{ type: String }],
     review: [
       {
@@ -45,7 +46,7 @@ const userSchema = new mongoose.Schema(
     },
     notifications: [
       {
-        type: { type: String, enum: ["payment", "follow", "event", "community_post"], required: true },
+        type: { type: String, enum: ["payment", "follow", "event", "video-call" , "community_post"], required: true },
         message: { type: String, required: true },
         route: { type: String, default: null },
         isRead: { type: Boolean, default: false },

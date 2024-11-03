@@ -6,7 +6,7 @@ const { createEvent, getAllEvent, getSingleEvent, getMyEvent, getCategoryEvent,g
 const router = express.Router();
 
 router.post("/", createEvent);
-// router.post("/postEvent", postEvent);
+router.post("/postEvent", postEvent);
 router.get("/", getAllEvent);
 router.get("/popular-events", getPopularEvents);
 router.get("/:id", getSingleEvent);

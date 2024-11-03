@@ -86,7 +86,7 @@ app.get('/health', (req, res) => {
 
 // WebSocket events
 io.on('connection', (socket) => {
-  console.log("User connected:", socket.id);
+  // console.log("User connected:", socket.id);
 
   socket.on('join', (userName) => {
     if (!userName || typeof userName !== 'string') {

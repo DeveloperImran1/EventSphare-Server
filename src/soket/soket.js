@@ -3,18 +3,19 @@ const http = require('http');
 const express = require("express");
 const app = express();
 const server = http.createServer(app);
-const cors = require('cors')
 
 const io = new Server(server,{
     cors:{
-        origin:['http://localhost:5173'],
+        origin:['http://localhost:3000'],
         methods:["GET","POST"]
     }
 });
+const userSocketmap={};
+
  const getReciverSocketId = (receverId)=>{
     return userSocketmap[receverId];
 };
-const userSocketmap={};
+
 
 io.on('connection',(socket)=>{
     const userId = socket.handshake.query.userId;

@@ -293,7 +293,49 @@ const getReviewUpdate = async (req, res) => {
   }
 };
 
+const postFeedback = async (req, res) => {
+  try {
+    const { eventId, name, review, rating } = req.body;
+    console.log(req.body)
+
+    if (!eventId || !name || !review || !rating) {
+      return res.status(400).json({ message: "Event ID, name, review, and rating are required." });
+    }
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5." });
+    }
+
+    // Find the event and update the reviews array
+    const updatedEvent = await Event.findByIdAndUpdate(
+      eventId,
+      {
+        $push: {
+          reviews: { name, review, rating },
+        },
+      },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    res.status(200).json({
+      message: "Feedback added successfully!",
+      event: updatedEvent,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to add feedback.",
+      error: error.message,
+    });
+  }
+};
+
+
+
 
 
 // module.exports = { getAllEvent, createEvent, getSingleEvent };
-module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents, getReviewUpdate,postEvent };
+module.exports = { getAllEvent, createEvent, getSingleEvent, getMyEvent, getCategoryEvent, getBookedSeatUpdate, getPopularEvents, getReviewUpdate,postEvent, postFeedback };

@@ -1,5 +1,5 @@
 const express = require("express");
-const { createEvent, getAllEvent, getSingleEvent, getMyEvent, getCategoryEvent,getBookedSeatUpdate ,getPopularEvents, postEvent} = require("../../controller/event/event.controller");
+const { createEvent, getAllEvent, getSingleEvent, getMyEvent, getCategoryEvent,getBookedSeatUpdate ,getPopularEvents, postEvent, postFeedback} = require("../../controller/event/event.controller");
 
 
 
@@ -14,6 +14,7 @@ router.patch("/:id", getBookedSeatUpdate);
 // router.post("/:id", getReviewUpdate);
 router.get("/getMyEvent/:email", getMyEvent);
 router.get("/getCategoryEvent/:category", getCategoryEvent);
+router.post("/feedback", postFeedback);
 
 
 module.exports = router;

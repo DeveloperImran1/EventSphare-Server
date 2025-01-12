@@ -31,14 +31,71 @@ const getOrderById = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const allOrder = await Order.find();
-    console.log("Orders retrieved:", allOrder); 
-    res.status(200).json(allOrder);
+    const {
+      page = 1,
+      limit = 10,
+      eventName = "",
+      totalTickets = null,
+      amount = null,
+      sortDate = null,
+    } = req.query;
+
+    const searchQuery = {};
+
+    // Search by eventName (case-insensitive)
+    if (eventName) {
+      searchQuery.eventName = { $regex: eventName, $options: "i" };
+    }
+
+    // Filter by totalTickets
+    if (totalTickets) {
+      const ticketFilter = parseInt(totalTickets);
+      if (!isNaN(ticketFilter) && ticketFilter >= 3) {
+        searchQuery.totalTickets = { $gte: ticketFilter };
+      }
+    }
+
+    // Filter by amount
+    if (amount) {
+      const amountFilter = parseInt(amount);
+      if (!isNaN(amountFilter) && amountFilter >= 500) {
+        searchQuery.amount = { $gte: amountFilter };
+      }
+    }
+
+    // Define sorting order
+    const sortOrder = sortDate === "new" ? -1 : sortDate === "old" ? 1 : null;
+
+    // Log the query for debugging
+    console.log("Final Query:", searchQuery, "Sort:", sortOrder);
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Fetch filtered and sorted orders with pagination
+    const allOrder = await Order.find(searchQuery)
+    .sort(sortOrder ? { updatedAt: sortOrder } : {}) 
+    .skip((pageNumber - 1) * limitNumber) 
+    .limit(limitNumber);
+
+
+    // Get total count for pagination
+    const totalOrders = await Order.countDocuments(searchQuery);
+
+    res.status(200).json({
+      orders: allOrder,
+      totalOrders,
+      totalPages: Math.ceil(totalOrders / limitNumber),
+      currentPage: pageNumber,
+    });
   } catch (error) {
-    console.error("Error fetching orders:", error.message); 
+    console.error("Error fetching orders:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 
 // get a user all orderd events
 const myAllOrder = async (req, res) => {

@@ -11,15 +11,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { ObjectId } = require("mongodb");
 const { sendReminderEmail } = require("../../lib/sendReminderEmail");
 
-// All order get korar api
-const getAllOrder = async (req, res) => {
-  try {
-    const allOrder = await Order.find();
-    res.status(200).json(allOrder);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // get order by gmail
 const getOrderById = async (req, res) => {
@@ -34,6 +25,17 @@ const getOrderById = async (req, res) => {
       res.status(404).send({ message: "Booking Data Not Found" })
     }
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getAllOrders = async (req, res) => {
+  try {
+    const allOrder = await Order.find();
+    console.log("Orders retrieved:", allOrder); 
+    res.status(200).json(allOrder);
+  } catch (error) {
+    console.error("Error fetching orders:", error.message); 
     res.status(500).json({ message: error.message });
   }
 };
@@ -275,4 +277,4 @@ const createOrder = async (req, res) => {
 }
 
 
-module.exports = { getAllOrder, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment, getSingleOrder , getOrganizerOrder, };
+module.exports = { getAllOrders, createOrder, getOrderById, metricsForAdminChart, monthlyMetrics, myAllOrder, refundRequest, createPayment, getSingleOrder , getOrganizerOrder, };

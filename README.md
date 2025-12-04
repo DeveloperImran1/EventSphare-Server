@@ -9,11 +9,11 @@
 - **Password:** aaaaaa
 
 **Organizer Email and Password**
-- **Email:** organizer@gmail.com
+- **Email:** organizer1@gmail.com
 - **Password:** aaaaaa
 
 **Admin Email and Password**
-- **Email:** admin@gmail.com
+- **Email:** admin1@gmail.com
 - **Password:** aaaaaa
 
 ## Live Site URL
@@ -165,4 +165,5 @@ Gift card purchase options and access to current promotions.
 ## Contributing
 
 If you'd like to contribute to this project, please fork the repository and use a feature branch. Pull requests are welcome.
+
 
